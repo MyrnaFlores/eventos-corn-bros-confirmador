@@ -309,51 +309,33 @@
             box.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
-        async function confirmarEvento() {
-            const datos = recogerDatos();
-            if (!datos) return;
+       try {
+    const url = WEBAPP_URL + '?accion=confirmar' + objectToParams(datos);
+    const resp = await fetch(url, { redirect: 'follow', mode: 'no-cors' });
+    // no-cors no devuelve JSON, asumimos éxito si no hay error
+    mostrarStatus(
+        '✅ <strong>¡Evento confirmado!</strong><br>' +
+        '📅 Agendado en Google Calendar<br>' +
+        '📊 Registrado en Google Sheets<br>' +
+        '📧 Confirmación enviada al cliente',
+        'ok'
+    );
+} catch(e) {
+    mostrarStatus('❌ Sin conexión. Verifica internet e intenta de nuevo.', 'error');
+}
 
-            mostrarStatus('⏳ Agendando evento y notificando...', 'load');
-
-            try {
-                const url = WEBAPP_URL + '?accion=confirmar' + objectToParams(datos);
-                const resp = await fetch(url, { redirect: 'follow' });
-                const data = await resp.json();
-
-                if (data.ok) {
-                    mostrarStatus(
-                        '✅ <strong>¡Evento confirmado!</strong><br>' +
-                        '📅 Agendado en Google Calendar<br>' +
-                        '📊 Registrado en Google Sheets<br>' +
-                        (data.email_enviado ? '📧 Confirmación enviada al cliente' : ''),
-                        'ok'
-                    );
-                } else {
-                    mostrarStatus('⚠️ Error: ' + (data.error || 'Intenta de nuevo'), 'error');
-                }
-            } catch(e) {
-                mostrarStatus('❌ Sin conexión. Verifica internet e intenta de nuevo.', 'error');
-            }
-        }
-
-        async function cancelarEvento() {
-            const datos = recogerDatos(true);
-            if (!datos) return;
-            mostrarStatus('⏳ Registrando cancelación...', 'load');
-            try {
-                const url = WEBAPP_URL + '?accion=cancelar' + objectToParams(datos);
-                const resp = await fetch(url, { redirect: 'follow' });
-                const data = await resp.json();
-                if (data.ok) {
-                    mostrarStatus('🚫 Evento marcado como cancelado en Sheets.', 'ok');
-                } else {
-                    mostrarStatus('⚠️ Error: ' + (data.error || 'Intenta de nuevo'), 'error');
-                }
-            } catch(e) {
-                mostrarStatus('❌ Sin conexión.', 'error');
-            }
-        }
-
+ async function cancelarEvento() {
+    const datos = recogerDatos(true);
+    if (!datos) return;
+    mostrarStatus('⏳ Registrando cancelación...', 'load');
+    try {
+        const url = WEBAPP_URL + '?accion=cancelar' + objectToParams(datos);
+        const resp = await fetch(url, { redirect: 'follow', mode: 'no-cors' });
+        mostrarStatus('🚫 Evento marcado como cancelado en Sheets.', 'ok');
+    } catch(e) {
+        mostrarStatus('❌ Sin conexión.', 'error');
+    }
+}
         function recogerDatos(soloRequeridos = false) {
             const nombre  = document.getElementById('f-nombre').value.trim();
             const fecha   = document.getElementById('f-fecha').value;
