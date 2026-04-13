@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Corn Bros — Menú & Cotizador</title>
+<link href="https://fonts.googleapis.com/css2?family=Knewave&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --y:#fad91a;--yd:#c8a800;--black:#0d0d0d;--red:#d91a1a;
+  --green:#1a8c26;--brown:#8b5e3c;--orange:#e8621a;
+  --bg:#0d0d0d;--bg2:#161616;--bg3:#1e1e1e;
+  --bd:#272727;--bd2:#353535;--tx:#f5f0e8;--txm:#9a8878;--txd:#4e4338;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:'Nunito',sans-serif;overflow-x:hidden}
+.screen{min-height:100vh;display:none;flex-direction:column}
+.screen.active{display:flex}
+
+/* TAPE */
+.tape{background:var(--y);padding:5px 0;overflow:hidden;white-space:nowrap;flex-shrink:0}
+.tape-inner{display:inline-flex;animation:tape 22s linear infinite}
+.tape-inner span{font-family:'Knewave',cursive;font-size:12px;color:#000;padding:0 18px;letter-spacing:1px}
+@keyframes tape{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* TOPBAR */
+.topbar{background:var(--black);border-bottom:3px solid var(--y);padding:.9rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar-logo{font-family:'Knewave',cursive;font-size:1.5rem;color:var(--y);letter-spacing:2px}
+.topbar-logo span{color:var(--tx);font-size:.75rem;letter-spacing:3px;display:block;line-height:1}
+.back-btn{background:none;border:1.5px solid var(--bd2);border-radius:8px;color:var(--txm);font-size:12px;padding:.4rem .9rem;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all .15s;font-family:'Nunito',sans-serif}
+.back-btn:hover{border-color:var(--y);color:var(--y)}
+
+/* ═══ SCREEN 1: MENÚ ═══ */
+.menu-hero{background:var(--black);padding:2.5rem 1.5rem 2rem;text-align:center;position:relative;overflow:hidden}
+.menu-hero::before{content:'🌽';font-size:8rem;position:absolute;right:-1rem;top:-1rem;opacity:.05;line-height:1}
+.menu-hero::after{content:'🌽';font-size:8rem;position:absolute;left:-1rem;bottom:-1.5rem;opacity:.05;line-height:1}
+.menu-hero-kicker{font-size:10px;letter-spacing:4px;color:var(--txm);text-transform:uppercase;margin-bottom:.5rem}
+.menu-hero-title{font-family:'Knewave',cursive;font-size:3rem;color:var(--y);line-height:1;text-shadow:4px 4px 0 rgba(0,0,0,.5);margin-bottom:.5rem}
+.menu-hero-sub{font-size:13px;color:var(--txm);line-height:1.6}
+.menu-hero-sub strong{color:var(--tx)}
+
+.msec{max-width:720px;margin:0 auto;padding:2rem 1.5rem .75rem;display:flex;align-items:center;gap:10px}
+.msec-title{font-family:'Knewave',cursive;font-size:1.1rem;color:var(--y);letter-spacing:1px;flex-shrink:0}
+.msec-line{flex:1;height:1px;background:var(--bd)}
+.msec-sub{font-size:11px;color:var(--txd);flex-shrink:0}
+
+.prod-grid{max-width:720px;margin:0 auto;padding:0 1.5rem;display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:.5rem}
+.pcard{border-radius:16px;cursor:pointer;position:relative;transition:transform .2s,box-shadow .2s;background:var(--bg2);border:2px solid var(--bd);overflow:hidden}
+.pcard:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.5)}
+.pcard:active{transform:scale(.98)}
+.pcard-top{padding:1.4rem 1.2rem 1rem;position:relative}
+.pcard-emoji{font-size:2.8rem;display:block;margin-bottom:.5rem;line-height:1}
+.pcard-name{font-family:'Knewave',cursive;font-size:1.15rem;letter-spacing:.5px;margin-bottom:.3rem}
+.pcard-desc{font-size:11.5px;color:var(--txm);line-height:1.5}
+.pcard-badge{position:absolute;top:.9rem;right:.9rem;font-family:'Knewave',cursive;font-size:10px;letter-spacing:.5px;padding:3px 10px;border-radius:99px}
+.pcard-bottom{padding:.75rem 1.2rem .9rem;border-top:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between}
+.pcard-desde{font-size:10px;color:var(--txm);text-transform:uppercase;letter-spacing:.5px}
+.pcard-price{font-family:'Knewave',cursive;font-size:1.35rem}
+.pcard-cta{font-size:11px;font-weight:700;letter-spacing:.5px;display:flex;align-items:center;gap:4px;opacity:.7;transition:opacity .15s}
+.pcard:hover .pcard-cta{opacity:1}
+.pcard-elote .pcard-name,.pcard-elote .pcard-price,.pcard-elote .pcard-cta{color:#fad91a}
+.pcard-elote .pcard-badge{background:rgba(250,217,26,.15);color:#fad91a;border:1px solid rgba(250,217,26,.3)}
+.pcard-doribros .pcard-name,.pcard-doribros .pcard-price,.pcard-doribros .pcard-cta{color:#e8621a}
+.pcard-doribros .pcard-badge{background:rgba(232,98,26,.15);color:#e8621a;border:1px solid rgba(232,98,26,.3)}
+.pcard-doribros{border-color:#1e1208}
+.pcard-maruchan .pcard-name,.pcard-maruchan .pcard-price,.pcard-maruchan .pcard-cta{color:#d91a1a}
+.pcard-maruchan .pcard-badge{background:rgba(217,26,26,.12);color:#d91a1a;border:1px solid rgba(217,26,26,.25)}
+.pcard-maruchan{border-color:#1a0808}
+.pcard-buldak .pcard-name,.pcard-buldak .pcard-price,.pcard-buldak .pcard-cta{color:#4dc95e}
+.pcard-buldak .pcard-badge{background:rgba(26,140,38,.15);color:#4dc95e;border:1px solid rgba(26,140,38,.3)}
+.pcard-buldak{border-color:#081208}
+
+.chich-strip{max-width:720px;margin:.5rem auto 0;padding:0 1.5rem}
+.chich-inner{background:var(--bg2);border:1.5px dashed rgba(232,98,26,.4);border-radius:12px;padding:.9rem 1.2rem;display:flex;align-items:center;gap:12px}
+.chich-ico{font-size:1.6rem;flex-shrink:0}
+.chich-name{font-family:'Knewave',cursive;font-size:1rem;color:var(--orange)}
+.chich-desc{font-size:11px;color:var(--txm)}
+.chich-price{font-family:'Knewave',cursive;font-size:1.1rem;color:var(--orange);margin-left:auto;flex-shrink:0}
+
+/* INTERCALADOS MENU */
+.inter-wrap{max-width:720px;margin:0 auto;padding:0 1.5rem 1rem;overflow-x:auto}
+.inter-scroll{display:flex;gap:10px;padding-bottom:.5rem;min-width:max-content}
+.icard{background:var(--bg2);border:1.5px solid var(--bd);border-radius:12px;padding:.9rem 1.1rem;min-width:200px;flex-shrink:0}
+.icard-combo{font-family:'Knewave',cursive;font-size:.95rem;color:var(--tx);margin-bottom:.3rem}
+.icard-range{font-size:11px;color:var(--txm);margin-bottom:.5rem}
+.icard-prices{display:flex;gap:8px;flex-wrap:wrap}
+.icard-pill{font-size:11px;background:var(--bg3);border:1px solid var(--bd2);border-radius:6px;padding:2px 8px;color:var(--txm)}
+.icard-pill strong{color:var(--y);font-weight:700}
+.inter-note{font-size:11px;color:var(--txd);padding:.25rem 0 .5rem;text-align:center}
+
+/* CREMAS MENU */
+.cremas-wrap{max-width:720px;margin:0 auto;padding:0 1.5rem 2rem}
+.cremas-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.ccard{background:var(--bg2);border:1.5px solid var(--bd);border-radius:10px;padding:.8rem;text-align:center}
+.ccard-dot{width:14px;height:14px;border-radius:50%;margin:0 auto .5rem}
+.ccard-name{font-family:'Knewave',cursive;font-size:.9rem;color:var(--tx);margin-bottom:.2rem}
+.ccard-desc{font-size:10px;color:var(--txm);line-height:1.4}
+
+/* FLOATING CTA */
+.float-cta{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(to top,var(--bg) 70%,transparent);padding:1.5rem;z-index:100}
+.fcta-btn{width:100%;max-width:720px;margin:0 auto;display:flex;padding:1rem 1.5rem;background:var(--y);color:#000;font-family:'Knewave',cursive;font-size:1.3rem;letter-spacing:1.5px;border:none;border-radius:14px;cursor:pointer;align-items:center;justify-content:center;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,.5);transition:background .15s}
+.fcta-btn:hover{background:var(--yd)}
+.fcta-sub{text-align:center;font-size:11px;color:var(--txm);margin-top:.4rem}
+
+/* ═══ SCREEN 2: COTIZADOR ═══ */
+.cot-body{max-width:700px;margin:0 auto;padding:1.75rem 1.5rem 6rem}
+.mockup-bar{background:rgba(250,217,26,.08);border:1px dashed rgba(250,217,26,.3);border-radius:6px;padding:.5rem 1rem;font-size:11px;color:var(--y);text-align:center;letter-spacing:.5px;margin-bottom:1.75rem;font-family:'Knewave',cursive}
+
+.proof{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--bd);border:1px solid var(--bd);border-radius:12px;overflow:hidden;margin-bottom:2rem}
+.proof-cell{background:var(--bg2);padding:.85rem .4rem;text-align:center}
+.proof-n{font-family:'Knewave',cursive;font-size:1.35rem;color:var(--y);line-height:1}
+.proof-l{font-size:10px;color:var(--txm);margin-top:2px}
+
+.sec{display:flex;align-items:center;gap:10px;margin-bottom:.85rem}
+.sec-num{font-family:'Knewave',cursive;font-size:11px;color:var(--y);background:rgba(250,217,26,.1);border:1px solid rgba(250,217,26,.2);border-radius:4px;padding:1px 8px;letter-spacing:1px;flex-shrink:0}
+.sec-title{font-family:'Knewave',cursive;font-size:1rem;color:var(--tx);letter-spacing:.5px}
+.sec-line{flex:1;height:1px;background:var(--bd)}
+
+/* MODE TOGGLE */
+.mode-toggle{display:grid;grid-template-columns:1fr 1fr;gap:0;background:var(--bg2);border:2px solid var(--bd);border-radius:12px;overflow:hidden;margin-bottom:2rem}
+.mode-btn{padding:.85rem;text-align:center;cursor:pointer;transition:all .2s;border:none;background:none;font-family:'Knewave',cursive;font-size:1rem;color:var(--txm);letter-spacing:.5px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.mode-btn:hover{background:var(--bg3)}
+.mode-btn.active{background:var(--bg3);color:var(--y);box-shadow:inset 0 -2px 0 var(--y)}
+.mode-btn .mode-ico{font-size:1.4rem}
+.mode-btn .mode-sub{font-size:10px;color:var(--txm);font-family:'Nunito',sans-serif;font-weight:400;letter-spacing:0}
+.mode-btn.active .mode-sub{color:var(--txm)}
+
+/* INDIVIDUAL PRODUCTS */
+.cot-prods{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:2rem}
+.cprod{border:2px solid var(--bd);border-radius:12px;padding:.8rem .5rem;cursor:pointer;transition:all .15s;background:var(--bg2);text-align:center}
+.cprod:hover{border-color:var(--bd2)}
+.cprod.active{border-color:var(--y);background:var(--bg3)}
+.cprod-emoji{font-size:1.6rem;display:block;margin-bottom:.3rem}
+.cprod-name{font-family:'Knewave',cursive;font-size:.78rem;color:var(--txm);line-height:1.2}
+.cprod.active .cprod-name{color:var(--y)}
+.cprod-price{font-family:'Knewave',cursive;font-size:.92rem;color:var(--txd);margin-top:.3rem}
+.cprod.active .cprod-price{color:var(--y)}
+
+/* PRICE PREVIEW */
+.price-prev{background:var(--bg3);border:1px solid var(--bd);border-radius:10px;padding:.75rem 1rem;margin-bottom:2rem}
+.pp-label{font-family:'Knewave',cursive;font-size:.8rem;color:var(--txm);letter-spacing:.5px;margin-bottom:.5rem}
+.pp-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px}
+.pp-cell{text-align:center;padding:.3rem .1rem;border-radius:6px}
+.pp-cell.act{background:rgba(250,217,26,.12);border:1px solid rgba(250,217,26,.25)}
+.pp-q{font-size:10px;color:var(--txd)}
+.pp-p{font-family:'Knewave',cursive;font-size:.82rem;color:var(--txm)}
+.pp-cell.act .pp-p{color:var(--y)}
+.pp-d{font-size:9px;color:var(--green)}
+
+/* INTERCALADO COMBOS */
+.combo-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:2rem}
+.combo-card{border:2px solid var(--bd);border-radius:12px;padding:.9rem 1rem;cursor:pointer;transition:all .15s;background:var(--bg2);position:relative}
+.combo-card:hover{border-color:var(--bd2)}
+.combo-card.active{border-color:var(--y);background:var(--bg3)}
+.combo-emojis{font-size:1.4rem;margin-bottom:.35rem}
+.combo-name{font-family:'Knewave',cursive;font-size:.95rem;color:var(--tx);letter-spacing:.3px;margin-bottom:.25rem}
+.combo-card.active .combo-name{color:var(--y)}
+.combo-note{font-size:11px;color:var(--txm)}
+.combo-price-row{display:flex;gap:6px;margin-top:.5rem;flex-wrap:wrap}
+.combo-pill{font-size:11px;background:var(--bg);border:1px solid var(--bd2);border-radius:5px;padding:2px 7px;color:var(--txd)}
+.combo-card.active .combo-pill{border-color:rgba(250,217,26,.3)}
+.combo-pill strong{color:var(--txm)}
+.combo-card.active .combo-pill strong{color:var(--y)}
+.combo-check{position:absolute;top:8px;right:8px;width:17px;height:17px;border-radius:50%;background:var(--y);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;font-size:10px;color:#000;font-weight:700}
+.combo-card.active .combo-check{opacity:1}
+
+/* INTER QTY (solo 100/150/200) */
+.inter-qty-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:.4rem}
+
+/* QTY INDIVIDUAL */
+.qty-row{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:.4rem}
+.qbtn{border:2px solid var(--bd);border-radius:10px;padding:.5rem .15rem;text-align:center;cursor:pointer;transition:all .15s;background:var(--bg2)}
+.qbtn:hover{border-color:var(--bd2)}
+.qbtn.active{border-color:var(--y);background:var(--bg3)}
+.qn{font-family:'Knewave',cursive;font-size:1.1rem;color:var(--txm)}
+.qbtn.active .qn{color:var(--y)}
+.qs{font-size:10px;color:var(--txd)}
+.qbtn.active .qs{color:var(--green)}
+.qty-msg{font-size:11px;color:var(--txm);text-align:right;margin-bottom:2rem;min-height:15px}
+
+/* CREMAS COT */
+.crem-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:2rem}
+.crem{border:2px solid var(--bd);border-radius:10px;padding:.6rem .85rem;cursor:pointer;transition:all .15s;background:var(--bg2);display:flex;align-items:center;gap:10px}
+.crem:hover{border-color:var(--bd2)}
+.crem.active{border-color:var(--y);background:var(--bg3)}
+.cdot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+.crem-name{font-family:'Knewave',cursive;font-size:.88rem;color:var(--tx)}
+.crem-desc{font-size:11px;color:var(--txm)}
+
+/* EXTRAS */
+.extras{display:flex;flex-direction:column;gap:8px;margin-bottom:2rem}
+.extra{display:flex;align-items:center;justify-content:space-between;border:2px solid var(--bd);border-radius:12px;padding:.75rem 1rem;background:var(--bg2);transition:border-color .15s}
+.extra.on-c{border-color:var(--orange)}
+.extra.on-f{border-color:var(--bd2)}
+.el{display:flex;align-items:center;gap:10px}
+.ei{font-size:1.2rem;width:26px;text-align:center}
+.en{font-family:'Knewave',cursive;font-size:.88rem;color:var(--tx)}
+.es{font-size:11px;color:var(--txm);margin-top:1px}
+.er{display:flex;align-items:center;gap:10px}
+.ep{font-family:'Knewave',cursive;font-size:.9rem;color:var(--orange)}
+.tog{width:40px;height:22px;border-radius:99px;background:var(--bd2);position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.tog.on{background:var(--orange)}
+.tog::after{content:'';position:absolute;width:16px;height:16px;border-radius:50%;background:var(--tx);top:3px;left:3px;transition:transform .2s}
+.tog.on::after{transform:translateX(18px);background:#fff}
+
+/* FORM */
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:2rem}
+.full{grid-column:1/-1}
+.flabel{font-size:10px;color:var(--txm);font-weight:700;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:4px}
+input[type=text],input[type=date],input[type=time]{background:var(--bg2);border:2px solid var(--bd);border-radius:8px;padding:.55rem .8rem;color:var(--tx);font-family:'Nunito',sans-serif;font-size:14px;width:100%;outline:none;transition:border-color .15s}
+input:focus{border-color:var(--y)}
+input::placeholder{color:var(--txd)}
+
+/* RESUMEN */
+.resumen{background:var(--bg2);border:2px solid var(--bd);border-radius:14px;padding:1.3rem;margin-bottom:1.5rem}
+.rrow{display:flex;justify-content:space-between;font-size:13px;padding:.3rem 0;border-bottom:1px solid var(--bd)}
+.rrow:last-of-type{border:none}
+.rk{color:var(--txm)}
+.rv{font-weight:600}
+.rdiv{height:1px;background:var(--bd);margin:.4rem 0}
+.rtotal{display:flex;justify-content:space-between;align-items:baseline;padding-top:.5rem}
+.rtl{font-family:'Knewave',cursive;font-size:.95rem;color:var(--txm)}
+.rtv{font-family:'Knewave',cursive;font-size:1.9rem;color:var(--y);text-shadow:2px 2px 0 rgba(0,0,0,.3)}
+.rnote{font-size:11px;color:var(--txd);text-align:right;margin-top:2px}
+.rant{display:flex;justify-content:space-between;background:rgba(250,217,26,.07);border:1px solid rgba(250,217,26,.16);border-radius:8px;padding:.5rem .9rem;margin-top:.7rem;font-size:13px}
+.ral{color:var(--txm)}
+.rav{font-family:'Knewave',cursive;font-size:1rem;color:var(--y)}
+.rsave{background:rgba(26,140,38,.08);border:1px solid rgba(26,140,38,.2);border-radius:8px;padding:.4rem .9rem;margin-top:.5rem;font-size:12px;color:var(--green);display:none}
+
+/* INFO INTERCALADO */
+.inter-info-strip{background:rgba(250,217,26,.06);border:1px solid rgba(250,217,26,.15);border-radius:10px;padding:.7rem 1rem;font-size:12px;color:var(--txm);margin-bottom:2rem;line-height:1.6}
+.inter-info-strip b{color:var(--y)}
+
+/* CTA */
+.cta-btn{width:100%;padding:1rem;background:var(--y);color:#000;font-family:'Knewave',cursive;font-size:1.35rem;letter-spacing:2px;border:none;border-radius:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:transform .1s,background .15s}
+.cta-btn:hover{background:var(--yd)}
+.cta-btn:active{transform:scale(.98)}
+.cta-note{text-align:center;font-size:12px;color:var(--txm);margin-top:.55rem;line-height:1.6}
+.cta-note b{color:var(--red)}
+
+.conds{margin-bottom:2rem}
+.cond{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--txm);padding:.28rem 0;line-height:1.5}
+.cdotc{width:5px;height:5px;border-radius:50%;background:var(--y);flex-shrink:0;margin-top:5px}
+
+.footer{text-align:center;padding:1.2rem 0 .5rem;border-top:1px solid var(--bd)}
+.footer-brand{font-family:'Knewave',cursive;font-size:1.2rem;color:var(--y);letter-spacing:2px;margin-bottom:3px}
+.footer-info{font-size:12px;color:var(--txm)}
+.footer-info a{color:var(--orange);text-decoration:none}
+
+/* HIDDEN HELPERS */
+.hide{display:none!important}
+
+@media(max-width:560px){
+  .prod-grid{grid-template-columns:1fr}
+  .cremas-grid{grid-template-columns:1fr 1fr}
+  .cot-prods{grid-template-columns:repeat(2,1fr)}
+  .qty-row,.pp-grid{grid-template-columns:repeat(3,1fr)}
+  .crem-grid{grid-column:1fr}
+  .fgrid{grid-template-columns:1fr}
+  .proof{grid-template-columns:repeat(2,1fr)}
+  .combo-grid{grid-template-columns:1fr}
+  .menu-hero-title{font-size:2.2rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 1: MENÚ
+═══════════════════════════════════════ -->
+<div class="screen active" id="screen-menu">
+
+  <div class="tape">
+    <div class="tape-inner">
+      <span>🌽 CORN BROS</span><span>⭐ CATERING PARA EVENTOS</span><span>🔥 ELOTE DE AUTOR</span><span>🌶️ BULDAK COREANO</span><span>💛 SABOR CON IDENTIDAD</span><span>📍 CHIHUAHUA, CHIH.</span>
+      <span>🌽 CORN BROS</span><span>⭐ CATERING PARA EVENTOS</span><span>🔥 ELOTE DE AUTOR</span><span>🌶️ BULDAK COREANO</span><span>💛 SABOR CON IDENTIDAD</span><span>📍 CHIHUAHUA, CHIH.</span>
+    </div>
+  </div>
+  <div class="topbar">
+    <div class="topbar-logo">CORN BROS<span>CATERING</span></div>
+    <div style="font-size:12px;color:var(--txm)">📍 Chihuahua, Chih.</div>
+  </div>
+
+  <div style="flex:1">
+    <div class="menu-hero">
+      <div class="menu-hero-kicker">catering para fiestas, empresas y todo tipo de eventos</div>
+      <div class="menu-hero-title">🌽 Menú de Eventos</div>
+      <div class="menu-hero-sub">Elige tu producto, selecciona la cantidad<br>y <strong>cotiza en segundos.</strong></div>
+    </div>
+
+    <!-- INDIVIDUALES -->
+    <div class="msec">
+      <span class="msec-title">Paquetes Individuales</span>
+      <span class="msec-line"></span>
+      <span class="msec-sub">Desde 30 personas</span>
+    </div>
+    <div class="prod-grid">
+      <div class="pcard pcard-elote" onclick="irCotizador('ind','elote')">
+        <div class="pcard-top">
+          <span class="pcard-emoji">🌽</span>
+          <div class="pcard-name">Elote en Vaso 10oz</div>
+          <div class="pcard-desc">Teen Bro. El clásico Corn Bros con crema, queso y aditamentos. El favorito de todos los eventos.</div>
+        </div>
+        <div class="pcard-bottom">
+          <div><div class="pcard-desde">Desde</div><div class="pcard-price">$42<small style="font-size:.65rem;font-family:'Nunito';font-weight:400;color:var(--txm)">/persona</small></div></div>
+          <div class="pcard-cta">Cotizar ›</div>
+        </div>
+      </div>
+      <div class="pcard pcard-doribros" onclick="irCotizador('ind','doribros')" style="margin-top:14px">
+        <div class="pcard-badge">🔥 MÁS PEDIDO</div>
+        <div class="pcard-top">
+          <span class="pcard-emoji">🧀</span>
+          <div class="pcard-name">Doribro's</div>
+          <div class="pcard-desc">Doritos, Tostitos o Rufles bañados en queso con aditamentos. Crujiente, intenso y adictivo.</div>
+        </div>
+        <div class="pcard-bottom">
+          <div><div class="pcard-desde">Desde</div><div class="pcard-price">$72<small style="font-size:.65rem;font-family:'Nunito';font-weight:400;color:var(--txm)">/persona</small></div></div>
+          <div class="pcard-cta">Cotizar ›</div>
+        </div>
+      </div>
+      <div class="pcard pcard-maruchan" onclick="irCotizador('ind','maruchan')">
+        <div class="pcard-top">
+          <span class="pcard-emoji">🍜</span>
+          <div class="pcard-name">Maruchan Especial</div>
+          <div class="pcard-desc">Maruchan preparada con elote, aditamentos y el toque único de los Bros.</div>
+        </div>
+        <div class="pcard-bottom">
+          <div><div class="pcard-desde">Desde</div><div class="pcard-price">$76<small style="font-size:.65rem;font-family:'Nunito';font-weight:400;color:var(--txm)">/persona</small></div></div>
+          <div class="pcard-cta">Cotizar ›</div>
+        </div>
+      </div>
+      <div class="pcard pcard-buldak" onclick="irCotizador('ind','buldak')">
+        <div class="pcard-badge">★ PREMIUM</div>
+        <div class="pcard-top">
+          <span class="pcard-emoji">🌶️</span>
+          <div class="pcard-name">Ramen Buldak</div>
+          <div class="pcard-desc">La fusión coreana-mexicana. Lo más audaz del menú. Para eventos que se recuerdan.</div>
+        </div>
+        <div class="pcard-bottom">
+          <div><div class="pcard-desde">Desde</div><div class="pcard-price">$127<small style="font-size:.65rem;font-family:'Nunito';font-weight:400;color:var(--txm)">/persona</small></div></div>
+          <div class="pcard-cta">Cotizar ›</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHICHABRO -->
+    <div class="chich-strip">
+      <div class="chich-inner">
+        <div class="chich-ico">🥓</div>
+        <div><div class="chich-name">+ Chichabro</div><div class="chich-desc">Agrega chicharrón premium a cualquier paquete</div></div>
+        <div class="chich-price">+$30/persona</div>
+      </div>
+    </div>
+
+    <!-- INTERCALADOS MENÚ -->
+    <div class="msec">
+      <span class="msec-title">Paquetes Intercalados</span>
+      <span class="msec-line"></span>
+      <span class="msec-sub">Desde 100 personas · 2 productos</span>
+    </div>
+    <div class="inter-wrap">
+      <div class="inter-scroll">
+        <div class="icard" onclick="irCotizador('int','elote+doribros')">
+          <div class="icard-combo">🌽 + 🧀 Elote & Doribro's</div>
+          <div class="icard-range">Mitad de cada producto · precio promedio</div>
+          <div class="icard-prices">
+            <div class="icard-pill">100p <strong>~$61</strong></div>
+            <div class="icard-pill">150p <strong>~$59</strong></div>
+            <div class="icard-pill">200p <strong>~$57</strong></div>
+          </div>
+        </div>
+        <div class="icard" onclick="irCotizador('int','elote+maruchan')">
+          <div class="icard-combo">🌽 + 🍜 Elote & Maruchan</div>
+          <div class="icard-range">Mitad de cada producto · precio promedio</div>
+          <div class="icard-prices">
+            <div class="icard-pill">100p <strong>~$62</strong></div>
+            <div class="icard-pill">150p <strong>~$60</strong></div>
+            <div class="icard-pill">200p <strong>~$59</strong></div>
+          </div>
+        </div>
+        <div class="icard" onclick="irCotizador('int','elote+buldak')">
+          <div class="icard-combo">🌽 + 🌶️ Elote & Buldak</div>
+          <div class="icard-range">Mitad de cada producto · precio promedio</div>
+          <div class="icard-prices">
+            <div class="icard-pill">100p <strong>~$89</strong></div>
+            <div class="icard-pill">150p <strong>~$87</strong></div>
+            <div class="icard-pill">200p <strong>~$85</strong></div>
+          </div>
+        </div>
+        <div class="icard" onclick="irCotizador('int','doribros+maruchan')">
+          <div class="icard-combo">🧀 + 🍜 Doribro's & Maruchan</div>
+          <div class="icard-range">Mitad de cada producto · precio promedio</div>
+          <div class="icard-prices">
+            <div class="icard-pill">100p <strong>~$79</strong></div>
+            <div class="icard-pill">150p <strong>~$76</strong></div>
+            <div class="icard-pill">200p <strong>~$74</strong></div>
+          </div>
+        </div>
+        <div class="icard" onclick="irCotizador('int','maruchan+buldak')">
+          <div class="icard-combo">🍜 + 🌶️ Maruchan & Buldak</div>
+          <div class="icard-range">Mitad de cada producto · precio promedio</div>
+          <div class="icard-prices">
+            <div class="icard-pill">100p <strong>~$107</strong></div>
+            <div class="icard-pill">150p <strong>~$104</strong></div>
+            <div class="icard-pill">200p <strong>~$102</strong></div>
+          </div>
+        </div>
+        <div class="icard" onclick="irCotizador('int','doribros+buldak')">
+          <div class="icard-combo">🧀 + 🌶️ Doribro's & Buldak</div>
+          <div class="icard-range">Mitad de cada producto · precio promedio</div>
+          <div class="icard-prices">
+            <div class="icard-pill">100p <strong>~$106</strong></div>
+            <div class="icard-pill">150p <strong>~$102</strong></div>
+            <div class="icard-pill">200p <strong>~$100</strong></div>
+          </div>
+        </div>
+      </div>
+      <div class="inter-note">Desliza para ver más · Todos incluyen transporte y descuento de volumen</div>
+    </div>
+
+    <!-- CREMAS MENÚ -->
+    <div class="msec">
+      <span class="msec-title">Cremas Disponibles</span>
+      <span class="msec-line"></span>
+      <span class="msec-sub">Sin costo extra</span>
+    </div>
+    <div class="cremas-wrap">
+      <div class="cremas-grid">
+        <div class="ccard"><div class="ccard-dot" style="background:#ffe08a;border:1px solid #c8a800"></div><div class="ccard-name">House</div><div class="ccard-desc">La firma de los Bros — cremosa y equilibrada</div></div>
+        <div class="ccard"><div class="ccard-dot" style="background:#f0f0f0;border:1px solid #888"></div><div class="ccard-name">Regular</div><div class="ccard-desc">Crema clásica, perfecta para todos</div></div>
+        <div class="ccard"><div class="ccard-dot" style="background:#d91a1a"></div><div class="ccard-name">Diablo 🌶️</div><div class="ccard-desc">Picante intenso, para los amantes del picante</div></div>
+        <div class="ccard"><div class="ccard-dot" style="background:#8b5e3c"></div><div class="ccard-name">Chipotle</div><div class="ccard-desc">Ahumada con toque picante</div></div>
+      </div>
+    </div>
+    <div style="height:7rem"></div>
+  </div>
+
+  <div class="float-cta">
+    <button class="fcta-btn" onclick="irCotizador('ind',null)">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="black"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2"/></svg>
+      COTIZA TU EVENTO
+    </button>
+    <div class="fcta-sub">Calcula tu precio en segundos</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     SCREEN 2: COTIZADOR
+═══════════════════════════════════════ -->
+<div class="screen" id="screen-cot">
+  <div class="tape">
+    <div class="tape-inner">
+      <span>💰 COTIZADOR DE EVENTOS</span><span>🌽 CORN BROS</span><span>📍 CHIHUAHUA, CHIH.</span><span>📲 614 190 9200</span><span>💛 APARTA TU FECHA HOY</span>
+      <span>💰 COTIZADOR DE EVENTOS</span><span>🌽 CORN BROS</span><span>📍 CHIHUAHUA, CHIH.</span><span>📲 614 190 9200</span><span>💛 APARTA TU FECHA HOY</span>
+    </div>
+  </div>
+  <div class="topbar">
+    <button class="back-btn" onclick="goMenu()">‹ Menú</button>
+    <div class="topbar-logo">COTIZADOR<span>CORN BROS</span></div>
+  </div>
+
+  <div class="cot-body">
+    <div class="mockup-bar">⚡ MOCKUP v3 · Precios oficiales Corn Bros · Para revisión del equipo</div>
+
+    <div class="proof">
+      <div class="proof-cell"><div class="proof-n">200+</div><div class="proof-l">Eventos</div></div>
+      <div class="proof-cell"><div class="proof-n">4.9★</div><div class="proof-l">Calificación</div></div>
+      <div class="proof-cell"><div class="proof-n">4</div><div class="proof-l">Productos</div></div>
+      <div class="proof-cell"><div class="proof-n">CHH</div><div class="proof-l">Chihuahua</div></div>
+    </div>
+
+    <!-- PASO 1: MODO -->
+    <div class="sec"><span class="sec-num">01</span><span class="sec-title">Tipo de paquete</span><span class="sec-line"></span></div>
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="mode-ind" onclick="setMode('ind')">
+        <span class="mode-ico">🌽</span>
+        Individual
+        <span class="mode-sub">Un solo producto · desde 30 personas</span>
+      </button>
+      <button class="mode-btn" id="mode-int" onclick="setMode('int')">
+        <span class="mode-ico">🎉</span>
+        Intercalado
+        <span class="mode-sub">Dos productos · desde 100 personas</span>
+      </button>
+    </div>
+
+    <!-- PASO 2: PRODUCTO (Individual) -->
+    <div id="bloque-ind">
+      <div class="sec"><span class="sec-num">02</span><span class="sec-title">Elige tu producto</span><span class="sec-line"></span></div>
+      <div class="cot-prods">
+        <div class="cprod" data-prod="elote" onclick="selProd(this)">
+          <span class="cprod-emoji">🌽</span>
+          <div class="cprod-name">Elote en Vaso</div>
+          <div class="cprod-price" id="cpx-elote">$49</div>
+        </div>
+        <div class="cprod" data-prod="doribros" onclick="selProd(this)">
+          <span class="cprod-emoji">🧀</span>
+          <div class="cprod-name">Doribro's</div>
+          <div class="cprod-price" id="cpx-doribros">$85</div>
+        </div>
+        <div class="cprod" data-prod="maruchan" onclick="selProd(this)">
+          <span class="cprod-emoji">🍜</span>
+          <div class="cprod-name">Maruchan</div>
+          <div class="cprod-price" id="cpx-maruchan">$89</div>
+        </div>
+        <div class="cprod" data-prod="buldak" onclick="selProd(this)">
+          <span class="cprod-emoji">🌶️</span>
+          <div class="cprod-name">Ramen Buldak</div>
+          <div class="cprod-price" id="cpx-buldak">$149</div>
+        </div>
+      </div>
+      <div class="price-prev">
+        <div class="pp-label">Precio por persona según cantidad</div>
+        <div class="pp-grid" id="pp-grid"></div>
+      </div>
+    </div>
+
+    <!-- PASO 2: COMBO (Intercalado) -->
+    <div id="bloque-int" class="hide">
+      <div class="sec"><span class="sec-num">02</span><span class="sec-title">Elige tu combinación</span><span class="sec-line"></span></div>
+      <div class="inter-info-strip">
+        <b>¿Cómo funciona?</b> Se sirve la mitad de cada producto seleccionado. El precio es el promedio de ambos con el descuento de volumen ya incluido. Disponible desde 100 personas.
+      </div>
+      <div class="combo-grid">
+        <div class="combo-card active" data-combo="elote+doribros" onclick="selCombo(this)">
+          <div class="combo-check">✓</div>
+          <div class="combo-emojis">🌽 + 🧀</div>
+          <div class="combo-name">Elote & Doribro's</div>
+          <div class="combo-note">Mitad de cada uno · precio promedio</div>
+          <div class="combo-price-row">
+            <div class="combo-pill">100p <strong>~$61</strong></div>
+            <div class="combo-pill">150p <strong>~$59</strong></div>
+            <div class="combo-pill">200p <strong>~$57</strong></div>
+          </div>
+        </div>
+        <div class="combo-card" data-combo="elote+maruchan" onclick="selCombo(this)">
+          <div class="combo-check">✓</div>
+          <div class="combo-emojis">🌽 + 🍜</div>
+          <div class="combo-name">Elote & Maruchan</div>
+          <div class="combo-note">Mitad de cada uno · precio promedio</div>
+          <div class="combo-price-row">
+            <div class="combo-pill">100p <strong>~$62</strong></div>
+            <div class="combo-pill">150p <strong>~$60</strong></div>
+            <div class="combo-pill">200p <strong>~$59</strong></div>
+          </div>
+        </div>
+        <div class="combo-card" data-combo="elote+buldak" onclick="selCombo(this)">
+          <div class="combo-check">✓</div>
+          <div class="combo-emojis">🌽 + 🌶️</div>
+          <div class="combo-name">Elote & Ramen Buldak</div>
+          <div class="combo-note">Mitad de cada uno · precio promedio</div>
+          <div class="combo-price-row">
+            <div class="combo-pill">100p <strong>~$89</strong></div>
+            <div class="combo-pill">150p <strong>~$87</strong></div>
+            <div class="combo-pill">200p <strong>~$85</strong></div>
+          </div>
+        </div>
+        <div class="combo-card" data-combo="doribros+maruchan" onclick="selCombo(this)">
+          <div class="combo-check">✓</div>
+          <div class="combo-emojis">🧀 + 🍜</div>
+          <div class="combo-name">Doribro's & Maruchan</div>
+          <div class="combo-note">Mitad de cada uno · precio promedio</div>
+          <div class="combo-price-row">
+            <div class="combo-pill">100p <strong>~$79</strong></div>
+            <div class="combo-pill">150p <strong>~$76</strong></div>
+            <div class="combo-pill">200p <strong>~$74</strong></div>
+          </div>
+        </div>
+        <div class="combo-card" data-combo="maruchan+buldak" onclick="selCombo(this)">
+          <div class="combo-check">✓</div>
+          <div class="combo-emojis">🍜 + 🌶️</div>
+          <div class="combo-name">Maruchan & Ramen Buldak</div>
+          <div class="combo-note">Mitad de cada uno · precio promedio</div>
+          <div class="combo-price-row">
+            <div class="combo-pill">100p <strong>~$107</strong></div>
+            <div class="combo-pill">150p <strong>~$104</strong></div>
+            <div class="combo-pill">200p <strong>~$102</strong></div>
+          </div>
+        </div>
+        <div class="combo-card" data-combo="doribros+buldak" onclick="selCombo(this)">
+          <div class="combo-check">✓</div>
+          <div class="combo-emojis">🧀 + 🌶️</div>
+          <div class="combo-name">Doribro's & Ramen Buldak</div>
+          <div class="combo-note">Mitad de cada uno · precio promedio</div>
+          <div class="combo-price-row">
+            <div class="combo-pill">100p <strong>~$106</strong></div>
+            <div class="combo-pill">150p <strong>~$102</strong></div>
+            <div class="combo-pill">200p <strong>~$100</strong></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 3: CANTIDAD Individual -->
+    <div id="qty-ind-bloque">
+      <div class="sec"><span class="sec-num">03</span><span class="sec-title">¿Cuántas personas?</span><span class="sec-line"></span></div>
+      <div class="qty-row">
+        <div class="qbtn" data-qty="30"  onclick="selQty(this)"><div class="qn">30</div><div class="qs">personas</div></div>
+        <div class="qbtn active" data-qty="50"  onclick="selQty(this)"><div class="qn">50</div><div class="qs">–5%</div></div>
+        <div class="qbtn" data-qty="75"  onclick="selQty(this)"><div class="qn">75</div><div class="qs">–8%</div></div>
+        <div class="qbtn" data-qty="100" onclick="selQty(this)"><div class="qn">100</div><div class="qs">–10%</div></div>
+        <div class="qbtn" data-qty="150" onclick="selQty(this)"><div class="qn">150</div><div class="qs">–13%</div></div>
+        <div class="qbtn" data-qty="200" onclick="selQty(this)"><div class="qn">200</div><div class="qs">–15%</div></div>
+      </div>
+      <div class="qty-msg" id="qty-msg">Más personas = mejor precio por persona 💛</div>
+    </div>
+
+    <!-- PASO 3: CANTIDAD Intercalado -->
+    <div id="qty-int-bloque" class="hide">
+      <div class="sec"><span class="sec-num">03</span><span class="sec-title">¿Cuántas personas?</span><span class="sec-line"></span></div>
+      <div class="inter-qty-row">
+        <div class="qbtn active" data-iqty="100" onclick="selIQty(this)"><div class="qn">100</div><div class="qs">–10% · 50+50</div></div>
+        <div class="qbtn" data-iqty="150" onclick="selIQty(this)"><div class="qn">150</div><div class="qs">–13% · 75+75</div></div>
+        <div class="qbtn" data-iqty="200" onclick="selIQty(this)"><div class="qn">200</div><div class="qs">–15% · 100+100</div></div>
+      </div>
+      <div class="qty-msg" id="iqty-msg">Precio promedio de ambos productos con descuento incluido 💛</div>
+    </div>
+
+    <!-- PASO 4: CREMA -->
+    <div class="sec"><span class="sec-num">04</span><span class="sec-title">Su crema, a su gusto <span style="font-family:'Nunito';font-size:11px;color:var(--txm);font-weight:400;letter-spacing:0;text-transform:none">(sin costo extra)</span></span><span class="sec-line"></span></div>
+    <div class="crem-grid">
+      <div class="crem active" onclick="selCrem(this)"><div class="cdot" style="background:#ffe08a;border:1px solid #c8a800"></div><div><div class="crem-name">House</div><div class="crem-desc">La firma de los Bros — cremosa, equilibrada</div></div></div>
+      <div class="crem" onclick="selCrem(this)"><div class="cdot" style="background:#f0f0f0;border:1px solid #888"></div><div><div class="crem-name">Regular</div><div class="crem-desc">Clásica, perfecta para todos los gustos</div></div></div>
+      <div class="crem" onclick="selCrem(this)"><div class="cdot" style="background:#d91a1a"></div><div><div class="crem-name">Diablo 🌶️</div><div class="crem-desc">Para los amantes del picante</div></div></div>
+      <div class="crem" onclick="selCrem(this)"><div class="cdot" style="background:#8b5e3c"></div><div><div class="crem-name">Chipotle</div><div class="crem-desc">Ahumada con toque picante</div></div></div>
+    </div>
+
+    <!-- PASO 5: EXTRAS -->
+    <div class="sec"><span class="sec-num">05</span><span class="sec-title">Personaliza tu experiencia</span><span class="sec-line"></span></div>
+    <div class="extras">
+      <div class="extra on-c" id="ex-c">
+        <div class="el"><div class="ei">🥓</div><div><div class="en">+ Chicharrón (Chichabro)</div><div class="es">Chicharrón premium · el toque que marca la diferencia</div></div></div>
+        <div class="er"><div class="ep">+$30/persona</div><div class="tog on" id="tog-c" onclick="togEx('c')"></div></div>
+      </div>
+      <div class="extra" id="ex-f">
+        <div class="el"><div class="ei">🧾</div><div><div class="en">Requiero Factura</div><div class="es">Se agrega 16% de IVA al total</div></div></div>
+        <div class="er"><div class="ep">+16% IVA</div><div class="tog" id="tog-f" onclick="togEx('f')"></div></div>
+      </div>
+    </div>
+
+    <!-- PASO 6: DATOS -->
+    <div class="sec"><span class="sec-num">06</span><span class="sec-title">Datos del evento</span><span class="sec-line"></span></div>
+    <div class="fgrid">
+      <div class="full"><label class="flabel">Nombre completo</label><input type="text" placeholder="¿A nombre de quién reservamos?"/></div>
+      <div><label class="flabel">Fecha del evento</label><input type="date"/></div>
+      <div><label class="flabel">Hora de inicio</label><input type="time"/></div>
+      <div class="full"><label class="flabel">Lugar / Salón</label><input type="text" placeholder="Nombre del lugar o dirección"/></div>
+    </div>
+
+    <!-- RESUMEN -->
+    <div class="sec"><span class="sec-num">💰</span><span class="sec-title">Tu cotización</span><span class="sec-line"></span></div>
+    <div class="resumen">
+      <div class="rrow"><span class="rk">Paquete</span><span class="rv" id="r-prod">—</span></div>
+      <div class="rrow"><span class="rk">Personas</span><span class="rv" id="r-qty">—</span></div>
+      <div class="rrow"><span class="rk">Precio por persona</span><span class="rv" id="r-unit">—</span></div>
+      <div class="rrow"><span class="rk">Subtotal servicio</span><span class="rv" id="r-serv">—</span></div>
+      <div class="rrow"><span class="rk">Chicharrón</span><span class="rv" id="r-chich">—</span></div>
+      <div class="rrow"><span class="rk">Transporte incluido</span><span class="rv" style="color:var(--green)">$500</span></div>
+      <div class="rrow" id="r-iva-row" style="display:none"><span class="rk">IVA (16%)</span><span class="rv" id="r-iva">—</span></div>
+      <div class="rdiv"></div>
+      <div class="rtotal"><span class="rtl">Costo Neto del Evento</span><span class="rtv" id="r-total">—</span></div>
+      <div class="rnote">Incluye servicio + transporte ($500)</div>
+      <div class="rant"><span class="ral">Anticipo para apartar fecha (50%)</span><span class="rav" id="r-ant">—</span></div>
+      <div class="rsave" id="r-save">🎉 Ahorro por volumen: <span id="r-ahorro">—</span></div>
+    </div>
+
+    <button class="cta-btn" onclick="abrirWhats()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="black"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.122 1.532 5.855L.057 23.882a.5.5 0 0 0 .613.614l6.098-1.464A11.94 11.94 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 0 1-5.007-1.373l-.36-.214-3.724.894.924-3.634-.234-.374A9.818 9.818 0 1 1 12 21.818z"/></svg>
+      APARTA TU FECHA HOY
+    </button>
+    <div class="cta-note">📲 Te contactamos en menos de 2 hrs &nbsp;·&nbsp; <b>Fechas limitadas</b> por fin de semana<br>WhatsApp: 614 190 9200</div>
+
+    <div style="height:1.5rem"></div>
+    <div class="sec"><span class="sec-num">📋</span><span class="sec-title">Condiciones</span><span class="sec-line"></span></div>
+    <div class="conds">
+      <div class="cond"><div class="cdotc"></div>Mínimo 30 personas para paquetes individuales.</div>
+      <div class="cond"><div class="cdotc"></div>Paquetes intercalados disponibles desde 100 personas.</div>
+      <div class="cond"><div class="cdotc"></div>Anticipo del 50% para confirmar tu fecha.</div>
+      <div class="cond"><div class="cdotc"></div>Costo neto incluye transporte ($500).</div>
+      <div class="cond"><div class="cdotc"></div>Chicharrón opcional (+$30/persona), indicar al reservar.</div>
+      <div class="cond"><div class="cdotc"></div>Para grupos mayores a 200 personas se cotiza por separado.</div>
+    </div>
+    <div class="footer">
+      <div class="footer-brand">🌽 CORN BROS</div>
+      <div class="footer-info"><a href="#">@cornbros.cuu</a> &nbsp;|&nbsp; cornbros.cuu &nbsp;|&nbsp; 614 190 9200</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══ DATOS OFICIALES CORN BROS ══ */
+const UNIT = {
+  elote:   {30:49,50:47,75:45,100:44,150:43,200:42},
+  doribros:{30:85,50:81,75:78,100:77,150:74,200:72},
+  maruchan:{30:89,50:85,75:82,100:80,150:77,200:76},
+  buldak:  {30:149,50:142,75:137,100:134,150:130,200:127}
+};
+const BASE = {elote:49,doribros:85,maruchan:89,buldak:149};
+const DISC = {30:0,50:5,75:8,100:10,150:13,200:15};
+const QTYS = [30,50,75,100,150,200];
+const PNAMES = {
+  elote:'Elote en Vaso 10oz (Teen Bro)',
+  doribros:"Doribro's",
+  maruchan:'Maruchan Especial',
+  buldak:'Ramen Buldak'
+};
+
+/* Netos intercalados SIN chicharrón (de tabla oficial) */
+const INTER_NETO = {
+  'elote+doribros':   {100:6550,  150:9275,  200:11900},
+  'elote+maruchan':   {100:6700,  150:9500,  200:12300},
+  'elote+buldak':     {100:9400,  150:13475, 200:17400},
+  'doribros+maruchan':{100:8350,  150:11825, 200:15300},
+  'maruchan+buldak':  {100:11200, 150:16025, 200:20800},
+  'doribros+buldak':  {100:11050, 150:15800, 200:20400}
+};
+/* Netos intercalados CON chicharrón */
+const INTER_NETO_C = {
+  'elote+doribros':   {100:9550,  150:13775, 200:17900},
+  'elote+maruchan':   {100:9700,  150:14000, 200:18300},
+  'elote+buldak':     {100:12400, 150:17975, 200:23400},
+  'doribros+maruchan':{100:11350, 150:16325, 200:21300},
+  'maruchan+buldak':  {100:14200, 150:20525, 200:26800},
+  'doribros+buldak':  {100:14050, 150:20300, 200:26400}
+};
+/* Precio unitario aproximado intercalados (para display) */
+const INTER_UNIT = {
+  'elote+doribros':   {100:61,150:59,200:57},
+  'elote+maruchan':   {100:62,150:60,200:59},
+  'elote+buldak':     {100:89,150:87,200:85},
+  'doribros+maruchan':{100:79,150:76,200:74},
+  'maruchan+buldak':  {100:107,150:104,200:102},
+  'doribros+buldak':  {100:106,150:102,200:100}
+};
+const INTER_NAMES = {
+  'elote+doribros':   'Elote en Vaso + Doribro\'s',
+  'elote+maruchan':   'Elote en Vaso + Maruchan Especial',
+  'elote+buldak':     'Elote en Vaso + Ramen Buldak',
+  'doribros+maruchan':"Doribro's + Maruchan Especial",
+  'maruchan+buldak':  'Maruchan Especial + Ramen Buldak',
+  'doribros+buldak':  "Doribro's + Ramen Buldak"
+};
+
+const TRANSPORT = 500, CHICH_PX = 30;
+
+let st = {mode:'ind', prod:'doribros', combo:'elote+doribros', qty:50, iqty:100, chich:true, fact:false};
+const fmt = n => '$' + Math.round(n).toLocaleString('es-MX');
+
+/* ══ NAVEGACIÓN ══ */
+function irCotizador(mode, sel) {
+  if(mode === 'int') {
+    st.mode = 'int';
+    if(sel) {
+      st.combo = sel;
+      document.querySelectorAll('.combo-card').forEach(c => c.classList.toggle('active', c.dataset.combo === sel));
+    }
+    document.getElementById('mode-ind').classList.remove('active');
+    document.getElementById('mode-int').classList.add('active');
+    switchMode('int');
+  } else {
+    st.mode = 'ind';
+    if(sel) {
+      st.prod = sel;
+      document.querySelectorAll('.cprod').forEach(p => p.classList.toggle('active', p.dataset.prod === sel));
+    }
+    document.getElementById('mode-ind').classList.add('active');
+    document.getElementById('mode-int').classList.remove('active');
+    switchMode('ind');
+  }
+  document.getElementById('screen-menu').classList.remove('active');
+  document.getElementById('screen-cot').classList.add('active');
+  window.scrollTo(0,0);
+  calc();
+}
+
+function goMenu() {
+  document.getElementById('screen-cot').classList.remove('active');
+  document.getElementById('screen-menu').classList.add('active');
+  window.scrollTo(0,0);
+}
+
+/* ══ MODE SWITCH ══ */
+function setMode(m) {
+  st.mode = m;
+  document.getElementById('mode-ind').classList.toggle('active', m==='ind');
+  document.getElementById('mode-int').classList.toggle('active', m==='int');
+  switchMode(m);
+  calc();
+}
+
+function switchMode(m) {
+  document.getElementById('bloque-ind').classList.toggle('hide', m!=='ind');
+  document.getElementById('bloque-int').classList.toggle('hide', m!=='int');
+  document.getElementById('qty-ind-bloque').classList.toggle('hide', m!=='ind');
+  document.getElementById('qty-int-bloque').classList.toggle('hide', m!=='int');
+}
+
+/* ══ COTIZADOR CALC ══ */
+function renderPP() {
+  document.getElementById('pp-grid').innerHTML = QTYS.map(q => {
+    const act = q === st.qty;
+    const d = DISC[q];
+    return `<div class="pp-cell${act?' act':''}">
+      <div class="pp-q">${q}p</div>
+      <div class="pp-p">${fmt(UNIT[st.prod][q])}</div>
+      <div class="pp-d">${d>0?'–'+d+'%':''}</div>
+    </div>`;
+  }).join('');
+}
+
+function updateCpPrices() {
+  ['elote','doribros','maruchan','buldak'].forEach(p => {
+    const el = document.getElementById('cpx-'+p);
+    if(el) el.textContent = fmt(UNIT[p][st.qty]);
+  });
+}
+
+function calc() {
+  let prodLabel, unitLabel, servLabel, netoBase, ahorro = 0;
+
+  if(st.mode === 'ind') {
+    const unit = UNIT[st.prod][st.qty];
+    const serv = unit * st.qty;
+    const chichTot = st.chich ? CHICH_PX * st.qty : 0;
+    netoBase = serv + chichTot + TRANSPORT;
+    const disc = DISC[st.qty];
+    ahorro = (BASE[st.prod] - unit) * st.qty;
+    prodLabel = PNAMES[st.prod];
+    unitLabel = fmt(unit)+'/persona'+(disc>0?' (–'+disc+'%)':'');
+    servLabel = fmt(serv);
+    document.getElementById('r-chich').textContent = st.chich ? `$${CHICH_PX} x ${st.qty} = ${fmt(chichTot)}` : '—';
+    document.getElementById('r-qty').textContent = st.qty + ' personas';
+    document.getElementById('qty-msg').textContent = disc>0
+      ? `¡Ahorro de ${disc}% aplicado — ${fmt(ahorro)} menos por volumen! 🎉`
+      : 'Más personas = mejor precio por persona 💛';
+    renderPP();
+    updateCpPrices();
+  } else {
+    const netoSinC = INTER_NETO[st.combo][st.iqty];
+    const netoConC = INTER_NETO_C[st.combo][st.iqty];
+    const unitAprox = st.chich
+      ? Math.round((netoConC - TRANSPORT) / st.iqty)
+      : INTER_UNIT[st.combo][st.iqty];
+    const chichTot = st.chich ? netoConC - netoSinC : 0;
+    netoBase = st.chich ? netoConC : netoSinC;
+    const servBase = netoSinC - TRANSPORT;
+    prodLabel = INTER_NAMES[st.combo] + ' (intercalado)';
+    unitLabel = '~'+fmt(unitAprox)+'/persona (promedio · descuento incluido)';
+    servLabel = fmt(servBase);
+    document.getElementById('r-chich').textContent = st.chich ? fmt(chichTot) : '—';
+    document.getElementById('r-qty').textContent = st.iqty + ' personas (' + (st.iqty/2) + ' + ' + (st.iqty/2) + ')';
+    document.getElementById('iqty-msg').textContent = `Precio promedio ya incluye –${DISC[st.iqty]}% de descuento por volumen 💛`;
+  }
+
+  const iva = st.fact ? netoBase * 0.16 : 0;
+  const neto = netoBase + iva;
+
+  document.getElementById('r-prod').textContent = prodLabel;
+  document.getElementById('r-unit').textContent = unitLabel;
+  document.getElementById('r-serv').textContent = servLabel;
+  document.getElementById('r-total').textContent = fmt(neto);
+  document.getElementById('r-ant').textContent = fmt(neto * 0.5);
+  document.getElementById('r-iva-row').style.display = st.fact ? '' : 'none';
+  document.getElementById('r-iva').textContent = fmt(iva);
+  const saveEl = document.getElementById('r-save');
+  saveEl.style.display = ahorro > 0 ? '' : 'none';
+  document.getElementById('r-ahorro').textContent = fmt(ahorro);
+}
+
+function selProd(el) {
+  document.querySelectorAll('.cprod').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  st.prod = el.dataset.prod;
+  calc();
+}
+function selCombo(el) {
+  document.querySelectorAll('.combo-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  st.combo = el.dataset.combo;
+  calc();
+}
+function selQty(el) {
+  document.querySelectorAll('#qty-ind-bloque .qbtn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  st.qty = parseInt(el.dataset.qty);
+  calc();
+}
+function selIQty(el) {
+  document.querySelectorAll('#qty-int-bloque .qbtn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  st.iqty = parseInt(el.dataset.iqty);
+  calc();
+}
+function selCrem(el) {
+  document.querySelectorAll('.crem').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+function togEx(id) {
+  const tog = document.getElementById('tog-'+id);
+  const row = document.getElementById('ex-'+id);
+  if(id==='c'){st.chich=!st.chich;tog.classList.toggle('on',st.chich);row.className='extra'+(st.chich?' on-c':'');}
+  else{st.fact=!st.fact;tog.classList.toggle('on',st.fact);row.className='extra'+(st.fact?' on-f':'');}
+  calc();
+}
+function abrirWhats() {
+  const isInt = st.mode==='int';
+  const qty = isInt ? st.iqty : st.qty;
+  const prod = isInt ? INTER_NAMES[st.combo]+' (intercalado)' : PNAMES[st.prod];
+  const msg = encodeURIComponent(
+    `¡Buenas! Me interesa el catering Corn Bros 🌽\n\n`+
+    `📦 Paquete: ${prod}\n`+
+    `👥 Personas: ${qty}\n`+
+    `🥓 Chicharrón: ${st.chich?'Sí (+$30/persona)':'No'}\n`+
+    `💰 Costo neto estimado: ${document.getElementById('r-total').textContent}\n`+
+    `📋 Anticipo (50%): ${document.getElementById('r-ant').textContent}\n\n`+
+    `¿Pueden confirmar disponibilidad de fecha?`
+  );
+  window.open(`https://wa.me/526141909200?text=${msg}`,'_blank');
+}
+
+calc();
+</script>
+</body>
+</html>
