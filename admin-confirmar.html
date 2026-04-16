@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corn Bros - Confirmar Evento</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Permanent+Marker&family=Knewave&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --amarillo: #FAD91A;
+            --negro: #0D0D0D;
+            --verde: #1A8C26;
+            --rojo: #D91A1A;
+            --wa: #25D366;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: var(--negro);
+            font-family: 'Montserrat', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+            gap: 1.5rem;
+        }
+        .logo-title {
+            font-family: 'Knewave', cursive;
+            color: var(--amarillo);
+            font-size: 2rem;
+            text-shadow: 3px 3px 0 rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        .badge {
+            background: var(--rojo);
+            color: white;
+            font-weight: 800;
+            font-size: 0.75rem;
+            padding: 4px 14px;
+            border-radius: 20px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .card {
+            background: white;
+            border: 4px solid var(--negro);
+            border-radius: 16px;
+            padding: 1.5rem;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 6px 6px 0 var(--amarillo);
+        }
+        .card h2 {
+            font-family: 'Permanent Marker', cursive;
+            color: var(--negro);
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            border-bottom: 3px dashed var(--amarillo);
+            padding-bottom: 0.5rem;
+        }
+        .field-group { margin-bottom: 1rem; }
+        .field-group label {
+            display: block;
+            font-weight: 800;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #555;
+            margin-bottom: 4px;
+        }
+        .field-group input, .field-group select, .field-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 3px solid var(--negro);
+            border-radius: 8px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            background: #FFFDE7;
+            color: var(--negro);
+        }
+        .field-group textarea { min-height: 70px; resize: vertical; }
+        .field-group input:focus, .field-group select:focus, .field-group textarea:focus {
+            outline: none;
+            border-color: var(--verde);
+        }
+        .row { display: flex; gap: 12px; }
+        .row .field-group { flex: 1; }
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            border: 4px solid var(--negro);
+            border-radius: 10px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 4px 4px 0 var(--negro);
+            transition: all 0.1s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .btn:active { transform: translate(3px,3px); box-shadow: 1px 1px 0 var(--negro); }
+        .btn-confirmar { background: var(--verde); color: white; margin-bottom: 0.75rem; }
+        .btn-cancelar  { background: var(--rojo);  color: white; }
+        .status-box {
+            display: none;
+            border-radius: 12px;
+            padding: 1.2rem;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1rem;
+            border: 3px solid;
+            margin-top: 1rem;
+        }
+        .status-ok    { background: #d4edda; color: #155724; border-color: var(--verde); }
+        .status-error { background: #f8d7da; color: #721c24; border-color: var(--rojo); }
+        .status-load  { background: #fff3cd; color: #856404; border-color: #ffc107; }
+        .divider {
+            width: 100%;
+            max-width: 480px;
+            border: none;
+            border-top: 2px dashed rgba(255,255,255,0.15);
+            margin: 0.5rem 0;
+        }
+        .hint {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.4);
+            text-align: center;
+            max-width: 480px;
+        }
+        .prefilled { border-color: var(--verde) !important; background: #e8f5e9 !important; }
+
+        /* ── MENSAJES WA ── */
+        .wa-mensajes {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 0 1rem;
+            box-sizing: border-box;
+        }
+        .wa-titulo {
+            font-family: 'Knewave', cursive;
+            font-size: 1.1rem;
+            color: #fad91a;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+        .wa-card {
+            background: #1a1a1a;
+            border: 1.5px solid #2e2e2e;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .wa-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 14px;
+            background: #222;
+            font-size: .8rem;
+            font-weight: 700;
+            color: #ccc;
+            border-bottom: 1px solid #2e2e2e;
+        }
+        .wa-copy-btn {
+            background: #fad91a;
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: .75rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background .15s;
+        }
+        .wa-copy-btn:hover { background: #ffe566; }
+        .wa-card-body {
+            padding: 12px 14px;
+            font-size: .82rem;
+            color: #aaa;
+            white-space: pre-wrap;
+            line-height: 1.6;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .copy-toast {
+            display: none;
+            background: #25D366;
+            color: #fff;
+            text-align: center;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: .82rem;
+            font-weight: 700;
+            animation: fadeout 2s forwards;
+        }
+        @keyframes fadeout {
+            0% { opacity: 1; }
+            70% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- PANTALLA DE ACCESO -->
+    <div id="login-screen" style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;padding:2rem;">
+        <div class="logo-title">🌽 CORN BROS</div>
+        <span class="badge">Panel Interno — Solo Equipo</span>
+        <div class="card" style="max-width:380px;width:100%;">
+            <h2>🔐 Acceso Restringido</h2>
+            <div class="field-group" style="margin-top:1rem;">
+                <label>Contraseña del equipo</label>
+                <input type="password" id="login-pass" placeholder="••••••••••••" onkeydown="if(event.key==='Enter') verificarAcceso()">
+            </div>
+            <div id="login-error" style="display:none;color:#D91A1A;font-weight:700;font-size:0.85rem;margin-top:0.5rem;text-align:center;">
+                ❌ Contraseña incorrecta
+            </div>
+            <br>
+            <button class="btn btn-confirmar" onclick="verificarAcceso()">
+                🔓 ENTRAR AL PANEL
+            </button>
+        </div>
+    </div>
+
+    <!-- PANEL PRINCIPAL (oculto hasta autenticar) -->
+    <div id="main-panel" style="display:none;width:100%;">
+    <div class="logo-title">🌽 CORN BROS</div>
+    <span class="badge">Panel Interno — Confirmar Evento</span>
+
+    <div class="card">
+        <h2>📋 Datos del Evento</h2>
+
+        <div class="field-group">
+            <label>Nombre del Cliente</label>
+            <input type="text" id="f-nombre" placeholder="Ej: María González">
+        </div>
+
+        <div class="field-group">
+            <label>Tel / WhatsApp del Cliente</label>
+            <input type="tel" id="f-telefono" placeholder="614 XXX XXXX">
+        </div>
+
+        <div class="field-group">
+            <label>Correo del Cliente (opcional)</label>
+            <input type="email" id="f-email" placeholder="cliente@email.com">
+        </div>
+
+        <div class="row">
+            <div class="field-group">
+                <label>Fecha del Evento</label>
+                <input type="date" id="f-fecha">
+            </div>
+            <div class="field-group">
+                <label>Hora de Inicio</label>
+                <input type="time" id="f-hora">
+            </div>
+        </div>
+
+        <div class="field-group">
+            <label>Paquete</label>
+            <select id="f-paquete">
+                <option value="">-- Selecciona --</option>
+                <option value="Elote Clásico">🌽 Elote Clásico</option>
+                <option value="Doribro's / Tostibro's">🧀 Doribro's / Tostibro's</option>
+                <option value="Papabro's">🍟 Papabro's</option>
+                <option value="Maruchan Bros">🍜 Maruchan Bros</option>
+                <option value="Buldak Coreano">🌶️ Buldak Coreano</option>
+            </select>
+        </div>
+
+        <div class="row">
+            <div class="field-group">
+                <label>Piezas</label>
+                <select id="f-piezas">
+                    <option value="30">30 piezas</option>
+                    <option value="50">50 piezas</option>
+                    <option value="100">100 piezas</option>
+                    <option value="200">200 piezas</option>
+                    <option value="400">400 piezas</option>
+                </select>
+            </div>
+            <div class="field-group">
+                <label>Total ($)</label>
+                <input type="number" id="f-total" placeholder="Ej: 3780">
+            </div>
+        </div>
+
+        <div class="field-group">
+            <label>Lugar del Evento</label>
+            <input type="text" id="f-lugar" placeholder="Salón, colonia, dirección">
+        </div>
+
+        <div class="field-group">
+            <label>Notas adicionales</label>
+            <textarea id="f-notas" placeholder="Chichabro extra, factura, indicaciones especiales..."></textarea>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>✅ Confirmar Depósito</h2>
+        <div class="field-group">
+            <label>Anticipo recibido ($)</label>
+            <input type="number" id="f-anticipo" placeholder="50% del total">
+        </div>
+        <div class="field-group">
+            <label>Responsable que confirma</label>
+            <select id="f-responsable">
+                <option value="Victor">Victor</option>
+                <option value="Equipo CB">Equipo CB</option>
+            </select>
+        </div>
+
+        <div id="status-box" class="status-box"></div>
+
+        <br>
+        <button class="btn btn-confirmar" onclick="confirmarEvento()">
+            🎉 CONFIRMAR EVENTO Y AGENDAR
+        </button>
+        <button class="btn btn-cancelar" onclick="if(confirm('¿Cancelar este evento?')) cancelarEvento()">
+            ❌ MARCAR COMO CANCELADO
+        </button>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ── MENSAJES WA ── -->
+    <div class="wa-mensajes">
+        <div class="wa-titulo">💬 Mensajes WhatsApp listos para enviar</div>
+
+        <div class="wa-card">
+            <div class="wa-card-header">
+                <span>📩 Mensaje 1 — Acuse de recibo</span>
+                <button class="wa-copy-btn" onclick="copiarMensaje(1)">📋 Copiar</button>
+            </div>
+            <div class="wa-card-body" id="msg-1"></div>
+        </div>
+
+        <div class="wa-card">
+            <div class="wa-card-header">
+                <span>✅ Mensaje 2 — Confirmación final</span>
+                <button class="wa-copy-btn" onclick="copiarMensaje(2)">📋 Copiar</button>
+            </div>
+            <div class="wa-card-body" id="msg-2"></div>
+        </div>
+
+        <div id="copy-toast" class="copy-toast">¡Copiado al portapapeles! 📋</div>
+    </div>
+
+    <hr class="divider">
+    <p class="hint">Este panel es de uso exclusivo del equipo Corn Bros.<br>No compartir con clientes.</p>
+
+    </div>
+
+    <script>
+        // ── CONFIGURACIÓN GLOBAL ──────────────────────────────────────────
+        const PANEL_PASSWORD = 'cornbros2026';
+        const WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbzlNbf5VtWL5Ibeu86H5lDPfhUrUJHEr_xUX1IBuydTdX4bFyADXhMYeZMBVrsnvHnp-Q/exec';
+
+        // ── LOGIN ─────────────────────────────────────────────────────────
+        function verificarAcceso() {
+            const pass = document.getElementById('login-pass').value;
+            if (pass === PANEL_PASSWORD) {
+                document.getElementById('login-screen').style.display = 'none';
+                const panel = document.getElementById('main-panel');
+                panel.style.display = 'flex';
+                panel.style.flexDirection = 'column';
+                panel.style.alignItems = 'center';
+                panel.style.gap = '1.5rem';
+                panel.style.padding = '2rem 1rem';
+                llenarDesdeURL();
+            } else {
+                document.getElementById('login-error').style.display = 'block';
+                document.getElementById('login-pass').value = '';
+                document.getElementById('login-pass').focus();
+            }
+        }
+
+        // ── PRE-LLENAR DESDE URL ──────────────────────────────────────────
+        function llenarDesdeURL() {
+            const p = new URLSearchParams(window.location.search);
+            const campos = {
+                nombre: 'f-nombre', telefono: 'f-telefono', fecha: 'f-fecha', hora: 'f-hora',
+                paquete: 'f-paquete', piezas: 'f-piezas', total: 'f-total',
+                lugar: 'f-lugar', notas: 'f-notas', anticipo: 'f-anticipo',
+            };
+            Object.entries(campos).forEach(([key, id]) => {
+                const val = p.get(key);
+                const el = document.getElementById(id);
+                if (val && el) {
+                    el.value = decodeURIComponent(val);
+                    el.classList.add('prefilled');
+                }
+            });
+            const totalEl = document.getElementById('f-total');
+            const anticipoEl = document.getElementById('f-anticipo');
+            if (totalEl.value && !p.get('anticipo')) {
+                anticipoEl.value = (parseFloat(totalEl.value) / 2).toFixed(2);
+            }
+            generarMensajes();
+        }
+
+        // ── STATUS ────────────────────────────────────────────────────────
+        function mostrarStatus(msg, tipo) {
+            const box = document.getElementById('status-box');
+            box.className = 'status-box status-' + tipo;
+            box.innerHTML = msg;
+            box.style.display = 'block';
+            box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // ── RECOGER DATOS DEL FORMULARIO ──────────────────────────────────
+        function recogerDatos(soloRequeridos = false) {
+            const nombre   = document.getElementById('f-nombre').value.trim();
+            const fecha    = document.getElementById('f-fecha').value;
+            const hora     = document.getElementById('f-hora').value;
+            const paquete  = document.getElementById('f-paquete').value;
+            const piezas   = document.getElementById('f-piezas').value;
+            const total    = document.getElementById('f-total').value;
+            const lugar    = document.getElementById('f-lugar').value.trim();
+            const notas    = document.getElementById('f-notas').value.trim();
+            const anticipo = document.getElementById('f-anticipo').value;
+            const resp     = document.getElementById('f-responsable').value;
+            const telefono = document.getElementById('f-telefono').value.trim();
+            const email    = document.getElementById('f-email').value.trim();
+
+            if (!nombre || !fecha || !hora) {
+                mostrarStatus('⚠️ Nombre, fecha y hora son obligatorios.', 'error');
+                return null;
+            }
+            return { nombre, fecha, hora, paquete, piezas, total, lugar, notas, anticipo, responsable: resp, email, telefono };
+        }
+
+        // ── CONVERTIR OBJETO A PARÁMETROS URL ────────────────────────────
+        function objectToParams(obj) {
+            return Object.entries(obj)
+                .map(([k, v]) => '&' + k + '=' + encodeURIComponent(v))
+                .join('');
+        }
+
+        // ── CONFIRMAR EVENTO ──────────────────────────────────────────────
+        async function confirmarEvento() {
+            const datos = recogerDatos();
+            if (!datos) return;
+            mostrarStatus('⏳ Agendando evento y notificando...', 'load');
+            try {
+                const url = WEBAPP_URL + '?accion=confirmar' + objectToParams(datos);
+                await fetch(url, { redirect: 'follow', mode: 'no-cors' });
+                mostrarStatus(
+                    '✅ <strong>¡Evento confirmado!</strong><br>' +
+                    '📅 Agendado en Google Calendar<br>' +
+                    '📊 Registrado en Google Sheets',
+                    'ok'
+                );
+            } catch(e) {
+                mostrarStatus('❌ Sin conexión. Verifica internet e intenta de nuevo.', 'error');
+            }
+        }
+
+        // ── CANCELAR EVENTO ───────────────────────────────────────────────
+        async function cancelarEvento() {
+            const datos = recogerDatos(true);
+            if (!datos) return;
+            mostrarStatus('⏳ Registrando cancelación...', 'load');
+            try {
+                const url = WEBAPP_URL + '?accion=cancelar' + objectToParams(datos);
+                await fetch(url, { redirect: 'follow', mode: 'no-cors' });
+                mostrarStatus('🚫 Evento marcado como cancelado en Sheets.', 'ok');
+            } catch(e) {
+                mostrarStatus('❌ Sin conexión.', 'error');
+            }
+        }
+
+        // ── MENSAJES WA ──────────────────────────────────────────────────
+        function generarMensajes() {
+            const nombre   = document.getElementById('f-nombre').value.trim() || '[nombre]';
+            const fecha    = document.getElementById('f-fecha').value || '[fecha]';
+            const hora     = document.getElementById('f-hora').value || '[hora]';
+            const paquete  = document.getElementById('f-paquete').value || '[paquete]';
+            const piezas   = document.getElementById('f-piezas').value || '[piezas]';
+            const lugar    = document.getElementById('f-lugar').value.trim() || '[lugar]';
+
+            // Formatear fecha bonita
+            let fechaBonita = fecha;
+            if (fecha) {
+                const d = new Date(fecha + 'T12:00:00');
+                fechaBonita = d.toLocaleDateString('es-MX', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                fechaBonita = fechaBonita.charAt(0).toUpperCase() + fechaBonita.slice(1);
+            }
+
+            const msg1 = `¡Hola ${nombre}! 🌽
+
+Recibimos tu solicitud para el ${fechaBonita}. En un momento verificamos tu pago y te confirmamos.
+
+¡Gracias por confiar en Corn Bros! 🧡`;
+
+            const msg2 = `¡Hola ${nombre}! ✅
+
+Tu evento está *confirmado* 🎉
+
+📅 *Fecha:* ${fechaBonita}
+⏰ *Hora:* ${hora}
+🌽 *Paquete:* ${paquete} (${piezas} personas)
+📍 *Lugar:* ${lugar}
+
+Ya quedó registrado en nuestra agenda. ¡Nos vemos ese día, va a estar delicioso! 🌽🥓`;
+
+            document.getElementById('msg-1').innerText = msg1;
+            document.getElementById('msg-2').innerText = msg2;
+        }
+
+        function copiarMensaje(num) {
+            const texto = document.getElementById('msg-' + num).innerText;
+            navigator.clipboard.writeText(texto).then(() => {
+                const toast = document.getElementById('copy-toast');
+                toast.style.display = 'block';
+                setTimeout(() => { toast.style.display = 'none'; }, 2200);
+            });
+        }
+
+        // Regenerar mensajes cuando cambian los campos clave
+        ['f-nombre','f-fecha','f-hora','f-paquete','f-piezas','f-lugar'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('input', generarMensajes);
+        });
+    </script>
+</body>
+</html>
